@@ -47,7 +47,7 @@ $(document).ready(function() {
 cs.additionalCallback = function() {
     cs.accessData = JSON.parse(sessionStorage.getItem("accessInfo"));
 
-    if (cs.checkParam()) {
+    if (Common.checkParam()) {
         Common.setIdleTime();
         cs.transGenki();
     }
@@ -160,7 +160,7 @@ var d1 = null;
 cs.getGenkikunData = function() {
     d1 = $.Deferred();
     cs.startAnimation();
-    cs.displayMessageByKey("msg.info.collaboratingData");
+    Common.displayMessageByKey("msg.info.collaboratingData");
 
     cs.updateCSToken();
 
@@ -193,13 +193,13 @@ cs.getGenkikunData = function() {
             cs.getDataAPI(prevDateS), // need valid genkiToken
             cs.getDataAPI(prevDateSh) // need valid genkiToken
         ).done(function(resultJ, resultS, resultSh) {
-            cs.updateGenkikunData(resultJ, resultS, resultSh);
+            Common.updateGenkikunData(resultJ, resultS, resultSh);
         }).fail(function(result) {
-            cs.displayMessageByKey("msg.error.failedToRetrieveData");
+            Common.displayMessageByKey("msg.error.failedToRetrieveData");
             cs.stopAnimation();
         });
     }).fail(function(result) {
-        cs.displayMessageByKey("msg.error.failedToRetrieveData");
+        Common.displayMessageByKey("msg.error.failedToRetrieveData");
         cs.stopAnimation();
     });
 };
@@ -741,10 +741,10 @@ cs.dispPhoto = function(skip, top) {
         if (dataList.length > 0) {
             $('#dvMainArea').css("display", "block");
         } else {
-            cs.displayMessageByKey("msg.error.dataNotFound");
+            Common.displayMessageByKey("msg.error.dataNotFound");
         }
     }).fail(function(data) {
-        cs.displayMessageByKey("msg.error.dataNotFound");
+        Common.displayMessageByKey("msg.error.dataNotFound");
     });
 }
 

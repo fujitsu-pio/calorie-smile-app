@@ -105,10 +105,10 @@ function dispPhoto() {
         if (dataList.length > 0) {
             $('#dvMainArea').css("display", "block");
         } else {
-            cs.displayMessageByKey("msg.error.dataNotFound");
+            Common.displayMessageByKey("msg.error.dataNotFound");
         }
     }).fail(function(data) {
-        cs.displayMessageByKey("msg.error.dataNotFound");
+        Common.displayMessageByKey("msg.error.dataNotFound");
     });
 }
 

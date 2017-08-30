@@ -68,7 +68,7 @@ additionalCallback = function() {
         }
     }
 
-    if (cs.checkParam()) {
+    if (Common.checkParam()) {
         Common.setIdleTime();
         // try to login with genkiAccessInfo.json downloaded from the server
         automaticLogin();
@@ -117,12 +117,12 @@ manualLogin = function() {
 };
 
 startLoginAnimation = function() {
-    cs.displayMessageByKey("login:msg.info.loggingIn");
+    Common.displayMessageByKey("login:msg.info.loggingIn");
     $("#register").prop("disabled", true);
 };
 
 stopLoginAnimation = function(msg_key) {
-    cs.displayMessageByKey(msg_key);
+    Common.displayMessageByKey(msg_key);
     $("#register").prop("disabled", false);
 };
 

@@ -46,28 +46,6 @@ cleanUpData = function() {
   sessionStorage.setItem("accessInfo", null);
 };
 
-cs.checkParam = function() {
-    var msg_key = "";
-    if (cs.accessData.target === null) {
-        msg_key = "msg.error.targetCellNotSelected";
-    } else if (cs.accessData.token ===null) {
-        msg_key = "msg.error.tokenMissing";
-    } else if (cs.accessData.refToken === null) {
-        msg_key = "msg.error.refreshTokenMissing";
-    } else if (cs.accessData.expires === null) {
-        msg_key = "msg.error.tokenExpiryDateMissing";
-    } else if (cs.accessData.refExpires === null) {
-        msg_key = "msg.error.refreshTokenExpiryDateMissing";
-    }
-
-    if (msg_key.length > 0) {
-        cs.displayMessageByKey(msg_key);
-        return false;
-    }
-
-    return true;
-};
-
 cs.getName = function(path) {
   var collectionName = path;
   var recordsCount = 0;
@@ -202,14 +180,4 @@ cs.addEndingSlash = function(url) {
     }
 
     return tempValue;
-};
-
-cs.displayMessageByKey = function(msg_key) {
-    if (msg_key) {
-        $('#dispMsg').attr("data-i18n", msg_key)
-            .localize()
-            .show();
-    } else {
-        $('#dispMsg').hide();
-    }
 };
