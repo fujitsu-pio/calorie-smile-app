@@ -10,8 +10,9 @@
     "readResponseDeclinedBody": "Read permission is not granted.",
     "me": "Me",
     "sessionExpiredDialog": {
-        "title": "Re-Login",
-        "message": "Session has expired.<br>Please login again."
+        "title": "$t(glossary:sessionExpiredDialog.title)",
+        "message": "Session has expired.<br>$t(glossary:sessionExpiredDialog.action)",
+        "btnOk": "$t(glossary:sessionExpiredDialog.btnOk)"
     },
     "msg": {
         "info": {

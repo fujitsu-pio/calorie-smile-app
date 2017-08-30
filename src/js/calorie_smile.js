@@ -20,64 +20,30 @@
  */
 var cs = {};
 
-//Default timeout limit - 60 minutes.
-cs.IDLE_TIMEOUT =  3600000;
-// 55 minutes
-cs.IDLE_CHECK = 3300000;
-// Records last activity time.
-cs.lastActivity = new Date().getTime();
-
 cs.accessData = {};
 
-/*
- * Need to move to a function to avoid conflicting with the i18nextBrowserLanguageDetector initialization.
- */
-function initJqueryI18next() {
-    // for options see
-    // https://github.com/i18next/jquery-i18next#initialize-the-plugin
-    jqueryI18next.init(i18next, $, {
-        useOptionsAttr: true
-    });
-}
-
-function updateContent() {
-    // start localizing, details:
-    // https://github.com/i18next/jquery-i18next#usage-of-selector-function
-    $('[data-i18n]').localize();
-}
-
-cs.appendSessionExpiredDialog = function() {
-    // Session Expiration
-    var html = [
-        '<div id="modal-session-expired" class="modal fade" role="dialog" data-backdrop="static">',
-            '<div class="modal-dialog">',
-                '<div class="modal-content">',
-                    '<div class="modal-header login-header">',
-                        '<h4 class="modal-title">',
-                            i18next.t("sessionExpiredDialog.title"),
-                        '</h4>',
-                    '</div>',
-                    '<div class="modal-body">',
-                        i18next.t("sessionExpiredDialog.message"),
-                    '</div>',
-                    '<div class="modal-footer">',
-                        '<button type="button" class="btn btn-primary" id="b-session-relogin-ok" >OK</button>',
-                    '</div>',
-               '</div>',
-           '</div>',
-        '</div>'
-    ].join("");
-    var modal = $(html);
-    $(document.body).append(modal);
-    $('#b-session-relogin-ok').on('click', function() { cs.closeTab(); });
+// Please add file names (with file extension) 
+getNamesapces = function(){
+    return ['common', 'glossary', 'login'];
 };
 
+// Usually the App's Personium cell and the web server reside on the same server.
+getAppCellUrl = function() {
+    var appUrlMatch = location.href.split("#");
+    var appUrlSplit = appUrlMatch[0].split("/");
+    appUrl = appUrlSplit[0] + "//" + appUrlSplit[2] + "/" + appUrlSplit[3] + "/";
+    if (appUrlSplit[0].indexOf("file:") == 0) {
+        appUrl = "https://demo.personium.io/hn-app-genki/";
+    }
+
+    return appUrl;
+}
+
 /*
- * clean up data and close tab
+ * clean up data for Calorie Smile
  */
-cs.closeTab = function() {
+cleanUpData = function() {
   sessionStorage.setItem("accessInfo", null);
-  window.close();
 };
 
 cs.checkParam = function() {
@@ -116,91 +82,6 @@ cs.getName = function(path) {
           collectionName = path.substring(lastIndex + 1, recordsCount);
   }
   return collectionName;
-};
-
-/*
- * Initialize info for idling check
- */
-cs.setIdleTime = function() {
-    cs.refreshToken();
-
-    // check 5 minutes before session expires (60minutes)
-    cs.checkIdleTimer = setInterval(cs.checkIdleTime, cs.IDLE_CHECK);
-
-    $(document).on('click mousemove keypress', function (event) {
-        cs.lastActivity = new Date().getTime();
-    });
-}
-
-/*
- * idling check 
- * cs.lastActivity + cs.accessData.expires * 1000
- */
-cs.checkIdleTime = function() {
-    if (new Date().getTime() > cs.lastActivity + cs.IDLE_TIMEOUT) {
-        cs.stopIdleTimer();
-        $('#modal-session-expired').modal('show');
-    } else {
-        cs.refreshToken();
-    }
-};
-
-cs.stopIdleTimer = function() {
-    clearInterval(cs.checkIdleTimer);
-    $(document).off('click mousemove keypress');
-};
-
-cs.refreshToken = function() {
-    cs.getAppToken().done(function(appToken) {
-        cs.getAppCellToken(appToken.access_token).done(function(appCellToken) {
-            // update sessionStorage
-            cs.updateSessionStorage(appCellToken);
-        }).fail(function(appCellToken) {
-            cs.displayMessageByKey("msg.error.failedToRefreshToken");
-        });
-    }).fail(function(appToken) {
-        cs.displayMessageByKey("msg.error.failedToRefreshToken");
-    });
-};
-
-cs.getAppToken = function() {
-  return $.ajax({
-                type: "POST",
-                url: 'https://demo.personium.io/hn-app-genki/__token',
-                processData: true,
-                dataType: 'json',
-                data: {
-                        grant_type: "password",
-                        username: "megenki",
-                        password: "personiumgenki",
-                        p_target: cs.accessData.cellUrl
-                },
-                headers: {'Accept':'application/json'}
-         });
-};
-
-cs.getAppCellToken = function(appToken) {
-  return $.ajax({
-                type: "POST",
-                url: cs.accessData.cellUrl + '__token',
-                processData: true,
-                dataType: 'json',
-                data: {
-                    grant_type: "refresh_token",
-                    refresh_token: cs.accessData.refToken,
-                    client_id: "https://demo.personium.io/hn-app-genki/",
-                    client_secret: appToken
-                },
-                headers: {'Accept':'application/json'}
-            });
-};
-
-cs.updateSessionStorage = function(appCellToken) {
-    cs.accessData.token = appCellToken.access_token;
-    cs.accessData.refToken = appCellToken.refresh_token;
-    cs.accessData.expires = appCellToken.expires_in;
-    cs.accessData.refExpires = appCellToken.refresh_token_expires_in;
-    sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
 };
 
 cs.updateSessionStorageGenkikun = function(json, loginData) {
@@ -283,7 +164,7 @@ cs.getGenkiAccessInfoAPI = function() {
 };
 
 /*
- * login and receive the server's tokan
+ * login and receive the server's token
  */
 cs.loginGenki = function(tempData) {
     var url = tempData.Url;

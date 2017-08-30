@@ -20,7 +20,7 @@ $(document).ready(function() {
     .use(i18nextBrowserLanguageDetector)
     .init({
         fallbackLng: 'en',
-        ns: ['common', 'login', 'glossary'],
+        ns: getNamesapces(),
         defaultNS: 'common',
         debug: true,
         backend: {
@@ -69,7 +69,7 @@ additionalCallback = function() {
     }
 
     if (cs.checkParam()) {
-        cs.setIdleTime();
+        Common.setIdleTime();
         // try to login with genkiAccessInfo.json downloaded from the server
         automaticLogin();
     }

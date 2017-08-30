@@ -7,6 +7,11 @@
     "food": "food",
     "photosOfMealsOf": "{{title}}'s $t(glossary:photosOfMeals)",
     "readRequestTarget": "$t(glossary:photosOfMeals)",
+    "sessionExpiredDialog": {
+        "title": "Re-Login",
+        "action": "Please login again.",
+        "btnOk": "OK"
+    },
     "menu": {
         "lookAtOtherPhotos": {
             "title": "View another user's photos",

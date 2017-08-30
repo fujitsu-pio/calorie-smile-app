@@ -26,7 +26,7 @@ $(document).ready(function() {
     .use(i18nextBrowserLanguageDetector)
     .init({
         fallbackLng: 'en',
-        ns: ['common', 'login', 'glossary'],
+        ns: getNamesapces(),
         defaultNS: 'common',
         debug: true,
         backend: {
@@ -48,7 +48,7 @@ cs.additionalCallback = function() {
     cs.accessData = JSON.parse(sessionStorage.getItem("accessInfo"));
 
     if (cs.checkParam()) {
-        cs.setIdleTime();
+        Common.setIdleTime();
         cs.transGenki();
     }
 
@@ -77,7 +77,7 @@ cs.additionalCallback = function() {
         } else {
             var title = i18next.t("readRequestTitle");
             var body = i18next.t("readRequestBody");
-            var reqRel = "https://demo.personium.io/hn-app-genki/__relation/__/ShokujiViewer";
+            var reqRel = getAppCellUrl() + "__relation/__/ShokujiViewer";
             cs.sendMessage(null, value, "req.relation.build", title, body, reqRel, cs.accessData.cellUrl);
         }
     });
@@ -215,8 +215,7 @@ cs.stopAnimation = function() {
 };
 /*
  * called by either of the followings:
- * 0. cs.transGenki -> cs.getGenkikunData during initialization
- * 1. cs.refreshToken to automatically refresh Calorie Smile server token
+ * 1. cs.transGenki -> cs.getGenkikunData during initialization
  * 2. cs.getGenkikunData when refresh button is clicked
  */
 cs.updateCSToken = function() {
@@ -671,8 +670,8 @@ cs.dispPhotoImage = function(cellUrl, token, title) {
 };
 
 cs.sendMessage = function(uuid, extCell, type, title, body, reqRel, reqRelTar) {
-    cs.getAppToken().done(function(appToken) {
-        cs.getAppCellToken(appToken.access_token).done(function(msgToken) {
+    Common.getAppToken().done(function(appToken) {
+        Common.getAppCellToken(appToken.access_token).done(function(msgToken) {
             cs.sendMessageAPI(uuid, extCell, type, title, body, reqRel, reqRelTar, msgToken.access_token).done(function(data) {
                 $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.messageSent"));
             }).fail(function(data) {

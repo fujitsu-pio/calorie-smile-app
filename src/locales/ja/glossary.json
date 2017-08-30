@@ -7,6 +7,11 @@
     "food": "食べ物",
     "photosOfMealsOf": "{{title}}の$t(glossary:photosOfMeals)",
     "readRequestTarget": "$t(glossary:photosOfMeals)",
+    "sessionExpiredDialog": {
+        "title": "再ログイン",
+        "action": ">ログインし直して下さい。",
+        "btnOk": "OK"
+    },
     "menu": {
         "lookAtOtherPhotos": {
             "title": "他の人の食事写真を見る",

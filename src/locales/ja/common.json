@@ -10,8 +10,9 @@
     "readResponseDeclinedBody": "拒否しました。",
     "me": "自分",
     "sessionExpiredDialog": {
-        "title": "再ログイン",
-        "message": "セッションの期限が切れています。<br>ログインし直して下さい。"
+        "title": "$t(glossary:sessionExpiredDialog.title)",
+        "message": "セッションの期限が切れています。<br>$t(glossary:sessionExpiredDialog.action)",
+        "btnOk": "$t(glossary:sessionExpiredDialog.btnOk)"
     },
     "msg": {
         "info": {

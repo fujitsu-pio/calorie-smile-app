@@ -24,7 +24,7 @@ $(document).ready(function() {
     .use(i18nextBrowserLanguageDetector)
     .init({
         fallbackLng: 'en',
-        ns: ['common', 'login', 'glossary'],
+        ns: getNamesapces(),
         defaultNS: 'common',
         debug: true,
         backend: {
@@ -43,7 +43,7 @@ $(document).ready(function() {
 });
 
 function additionalCallback() {
-    cs.setIdleTime();
+    Common.setIdleTime();
     dispPhoto();
     $('#photoTitle').attr("data-i18n-options", ["{ \"title\": \"", cs.accessData.Title, "\" }"].join(''));
 };
