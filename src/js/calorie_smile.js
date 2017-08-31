@@ -22,44 +22,18 @@ var cs = {};
 
 cs.accessData = {};
 
+const APP_URL = "https://demo.personium.io/hn-app-genki/";
+
 // Please add file names (with file extension) 
 getNamesapces = function(){
     return ['common', 'glossary', 'login'];
 };
-
-// Usually the App's Personium cell and the web server reside on the same server.
-getAppCellUrl = function() {
-    var appUrlMatch = location.href.split("#");
-    var appUrlSplit = appUrlMatch[0].split("/");
-    appUrl = appUrlSplit[0] + "//" + appUrlSplit[2] + "/" + appUrlSplit[3] + "/";
-    if (appUrlSplit[0].indexOf("file:") == 0) {
-        appUrl = "https://demo.personium.io/hn-app-genki/";
-    }
-
-    return appUrl;
-}
 
 /*
  * clean up data for Calorie Smile
  */
 cleanUpData = function() {
   sessionStorage.setItem("accessInfo", null);
-};
-
-cs.getName = function(path) {
-  var collectionName = path;
-  var recordsCount = 0;
-  if (collectionName != undefined) {
-          recordsCount = collectionName.length;
-          var lastIndex = collectionName.lastIndexOf("/");
-          if (recordsCount - lastIndex === 1) {
-                  collectionName = path.substring(0, recordsCount - 1);
-                  recordsCount = collectionName.length;
-                  lastIndex = collectionName.lastIndexOf("/");
-          }
-          collectionName = path.substring(lastIndex + 1, recordsCount);
-  }
-  return collectionName;
 };
 
 cs.updateSessionStorageGenkikun = function(json, loginData) {
@@ -132,7 +106,7 @@ cs.getCalorieSmileServerToken = function(startAnimation, stopAnimation, loginSuc
 cs.getGenkiAccessInfoAPI = function() {
     return $.ajax({
         type: "GET",
-        url: cs.accessData.target + '/GenkiKunBox/genkiAccessInfo.json',
+        url: Common.getTargetUrl() + '/GenkiKunBox/genkiAccessInfo.json',
         dataType: "text",
         headers: {
             'Authorization':'Bearer ' + cs.accessData.token,
@@ -151,7 +125,7 @@ cs.loginGenki = function(tempData) {
     return $.ajax({
         type: "POST",
         //url: cs.accessData.target + '/GenkiKunService/getToken?targetUrl=' + url + 'newpersonium/Response&id=' + id + '&pass=' + pw,
-        url: cs.accessData.target + '/GenkiKunService/getToken',
+        url: Common.getTargetUrl() + '/GenkiKunService/getToken',
         data: {
             'targetUrl': url + 'newpersonium/Response',
             'id': id,

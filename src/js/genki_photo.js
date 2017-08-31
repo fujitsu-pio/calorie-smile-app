@@ -35,7 +35,6 @@ $(document).ready(function() {
     }, function(err, t) {
         initJqueryI18next();
         
-        cs.appendSessionExpiredDialog();
         additionalCallback();
         
         updateContent();
