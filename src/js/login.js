@@ -20,11 +20,15 @@ additionalCallback = function() {
     
     Common.setAccessData();
 
-    if (Common.checkParam()) {
-        Common.setIdleTime();
-        // try to login with genkiAccessInfo.json downloaded from the server
-        automaticLogin();
-    }
+    if (!Common.checkParam()) {
+        // cannot do anything to recover
+        // display a dialog and close the app.
+        return;
+    };
+
+    Common.setIdleTime();
+    // try to login with genkiAccessInfo.json downloaded from the server
+    automaticLogin();
 };
 
 /*
@@ -55,7 +59,7 @@ manualLogin = function() {
             data: JSON.stringify(tempData),
             dataType: 'json',
             headers: {
-                'Authorization':'Bearer ' + cs.accessData.token,
+                'Authorization':'Bearer ' + Common.getToken(),
                 'Accept':'application/json'
             }
         }).done(function(res) {

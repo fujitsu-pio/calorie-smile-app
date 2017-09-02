@@ -36,6 +36,8 @@ $(document).ready(function() {
         }
     }, function(err, t) {
         initJqueryI18next();
+
+        Common.appendCommonDialog();
         
         additionalCallback();
         
@@ -46,10 +48,14 @@ $(document).ready(function() {
 additionalCallback = function() {
     cs.accessData = JSON.parse(sessionStorage.getItem("accessInfo"));
 
-    if (Common.checkParam()) {
-        Common.setIdleTime();
-        cs.transGenki();
-    }
+    if (!Common.checkParam()) {
+        // cannot do anything to recover
+        // display a dialog and close the app.
+        return;
+    };
+
+    Common.setIdleTime();
+    cs.transGenki();
 
     $('#bExtCalSmile').on('click', function () {
         var value = $("#otherAllowedCells option:selected").val();
@@ -77,7 +83,7 @@ additionalCallback = function() {
             var title = i18next.t("readRequestTitle");
             var body = i18next.t("readRequestBody");
             var reqRel = Common.getAppCellUrl() + "__relation/__/ShokujiViewer";
-            cs.sendMessage(null, value, "req.relation.build", title, body, reqRel, cs.accessData.cellUrl);
+            cs.sendMessage(null, value, "req.relation.build", title, body, reqRel, Common.getCellUrl());
         }
     });
 
@@ -162,7 +168,7 @@ cs.getGenkikunData = function() {
             cs.getDataAPI(prevDateS), // need valid genkiToken
             cs.getDataAPI(prevDateSh) // need valid genkiToken
         ).done(function(resultJ, resultS, resultSh) {
-            Common.updateGenkikunData(resultJ, resultS, resultSh);
+            cs.updateGenkikunData(resultJ, resultS, resultSh);
         }).fail(function(result) {
             Common.displayMessageByKey("msg.error.failedToRetrieveData");
             cs.stopAnimation();
@@ -279,7 +285,7 @@ cs.jissekiLinkage = function(data) {
         type: "GET",
         url: Common.getTargetUrl() + '/GenkiKunData/jisseki?$filter=id+eq+%27' + data.id + '%27+and+jisseki_date+eq+%27' + data.jisseki_date + '%27+and+plan_type+eq+' + planType,
         headers: {
-            'Authorization': 'Bearer ' + cs.accessData.token,
+            'Authorization': 'Bearer ' + Common.getToken(),
             'Accept':'application/json'
         }
     }).done(function(nowData) {
@@ -290,7 +296,7 @@ cs.jissekiLinkage = function(data) {
             type = "PUT";
             url += "('" + nowData.d.results[0].__id + "')";
         }
-        cs.getGenkiDataAPI(type, url, data, cs.accessData.token).done(function() {
+        cs.getGenkiDataAPI(type, url, data, Common.getToken()).done(function() {
             if (type === "PUT") {
                 cs.updCnt += 1;
             } else {
@@ -313,7 +319,7 @@ cs.sokuteiLinkage = function(data) {
         type: "GET",
         url: Common.getTargetUrl() + '/GenkiKunData/sokutei?$filter=id+eq+%27' + data.id + '%27+and+sokutei_date+eq+%27' + data.sokutei_date + '%27',
         headers: {
-            'Authorization': 'Bearer ' + cs.accessData.token,
+            'Authorization': 'Bearer ' + Common.getToken(),
             'Accept':'application/json'
         }
     }).done(function(nowData) {
@@ -324,7 +330,7 @@ cs.sokuteiLinkage = function(data) {
             type = "PUT";
             url += "('" + nowData.d.results[0].__id + "')";
         }
-        cs.getGenkiDataAPI(type, url, data, cs.accessData.token).done(function() {
+        cs.getGenkiDataAPI(type, url, data, Common.getToken()).done(function() {
             if (type === "PUT") {
                 cs.updCnt += 1;
             } else {
@@ -351,7 +357,7 @@ cs.shokujiLinkage = function(data) {
         type: "GET",
         url: Common.getTargetUrl() + '/GenkiKunData/shokuji?$filter=id+eq+%27' + data.id + '%27+and+shokuji_date+eq+%27' + data.shokuji_date + '%27+and+shokuji_type+eq+' + shokujiType,
         headers: {
-            'Authorization': 'Bearer ' + cs.accessData.token,
+            'Authorization': 'Bearer ' + Common.getToken(),
             'Accept':'application/json'
         }
     }).done(function(nowData) {
@@ -362,7 +368,7 @@ cs.shokujiLinkage = function(data) {
             type = "PUT";
             url += "('" + nowData.d.results[0].__id + "')";
         }
-        cs.getGenkiDataAPI(type, url, data, cs.accessData.token).done(function() {
+        cs.getGenkiDataAPI(type, url, data, Common.getToken()).done(function() {
             if (type === "PUT") {
                 cs.updCnt += 1;
             } else {
@@ -385,7 +391,7 @@ cs.shokujiInfoLinkage = function(data) {
         type: "GET",
         url: Common.getTargetUrl() + '/GenkiKunData/shokuji_info?$filter=id+eq+%27' + data.id + '%27+and+shokuji_date+eq+%27' + data.shokuji_date + '%27+and+no+eq+' + data.no + ' and time eq %27' + data.time + '%27',
         headers: {
-            'Authorization': 'Bearer ' + cs.accessData.token,
+            'Authorization': 'Bearer ' + Common.getToken(),
             'Accept':'application/json'
         }
     }).done(function(nowData) {
@@ -396,7 +402,7 @@ cs.shokujiInfoLinkage = function(data) {
             type = "PUT";
             url += "('" + nowData.d.results[0].__id + "')";
         }
-        cs.getGenkiDataAPI(type, url, data, cs.accessData.token).done(function() {
+        cs.getGenkiDataAPI(type, url, data, Common.getToken()).done(function() {
             if (data.photo) {
                 cs.uploadPhotoImage(data.photo).done(function(res) {
                     if (type === "PUT") {
@@ -452,12 +458,12 @@ cs.uploadPhotoImage = function(imageSrc) {
             'id': id,
             'photo': imageSrc,
             'genkiToken': cs.accessData.genkiToken,
-            'refToken': cs.accessData.refToken,
-            'myCellUrl': cs.accessData.cellUrl
+            'refToken': Common.getRefressToken(),
+            'myCellUrl': Common.getCellUrl()
         },
         headers:{
             'Accept':'application/json',
-            'Authorization':'Bearer ' + cs.accessData.token
+            'Authorization':'Bearer ' + Common.getToken()
         }
     });
 };
@@ -518,7 +524,7 @@ cs.dispOtherAllowedCells = function(extUrl) {
 
 cs.checkOtherAllowedCells = function(extUrl, dispName) {
     cs.getTargetToken(extUrl).done(function(extData) {
-        cs.getPhotoAPI(extUrl + cs.accessData.boxName, extData.access_token).done(function(data) {
+        cs.getPhotoAPI(extUrl + Common.getBoxName(), extData.access_token).done(function(data) {
             cs.appendOtherAllowedCells(extUrl, dispName);
         }).fail(function(data) {
             if (data.status !== 404) {
@@ -539,9 +545,9 @@ cs.appendRequestCells = function(extUrl, dispName) {
 cs.getAllowedCellList = function() {
     $.ajax({
         type: "GET",
-        url: cs.accessData.cellUrl + '__ctl/Relation(Name=\'ShokujiViewer\',_Box\.Name=\'' + cs.accessData.boxName + '\')/$links/_ExtCell',
+        url: Common.getCellUrl() + '__ctl/Relation(Name=\'ShokujiViewer\',_Box\.Name=\'' + Common.getBoxName() + '\')/$links/_ExtCell',
         headers: {
-            'Authorization':'Bearer ' + cs.accessData.token,
+            'Authorization':'Bearer ' + Common.getToken(),
             'Accept':'application/json'
         }
     }).done(function(data) {
@@ -596,7 +602,7 @@ cs.getReceiveMessage = function() {
         var results = data.d.results;
         for (var i in results) {
             var boxName = results[i]["_Box.Name"];
-            if (cs.accessData.boxName === boxName) {
+            if (Common.getBoxName() === boxName) {
                 var title = results[i].Title;
                 var body = results[i].Body;
                 var fromCell = results[i].From;
@@ -625,12 +631,12 @@ cs.getReceiveMessage = function() {
 
 cs.dispPhotoImage = function(cellUrl, token, title) {
     if (cellUrl) {
-        cs.accessData.photoCell = cellUrl + cs.accessData.boxName;
+        cs.accessData.photoCell = cellUrl + Common.getBoxName();
         cs.accessData.photoToken = token;
         cs.accessData.Title = title;
     } else {
         cs.accessData.photoCell = Common.getTargetUrl();
-        cs.accessData.photoToken = cs.accessData.token;
+        cs.accessData.photoToken = Common.getToken();
         cs.accessData.Title = i18next.t("me");
     }
     
@@ -733,7 +739,7 @@ cs.setPhoto = function(dateId, timeId, noId, imageName) {
     oReq.open("GET", filePath);
     oReq.responseType = "blob";
     oReq.setRequestHeader("Content-Type", contentType);
-    oReq.setRequestHeader("Authorization", "Bearer " + cs.accessData.token);
+    oReq.setRequestHeader("Authorization", "Bearer " + Common.getToken());
     oReq.onload = function(response) {
         var blob = oReq.response;
         var file = new File([blob], imageName);
@@ -758,7 +764,7 @@ cs.getDispPhotoAPI = function(skip, top) {
         type: 'GET',
         url: Common.getTargetUrl() + '/GenkiKunData/shokuji_info?$skip=' + skip + '&$top=' + top + '&$filter=id+eq+%27' + id + '%27&$orderby=shokuji_date%20desc,time%20asc,no%20asc',
         headers: {
-            'Authorization':'Bearer ' + cs.accessData.token,
+            'Authorization':'Bearer ' + Common.getToken(),
             'Accept':'application/json'
         }
     });
@@ -772,9 +778,9 @@ cs.openSlide = function() {
 cs.getExtCell = function() {
   return $.ajax({
                 type: "GET",
-                url: cs.accessData.cellUrl + '__ctl/ExtCell',
+                url: Common.getCellUrl() + '__ctl/ExtCell',
                 headers: {
-                    'Authorization':'Bearer ' + cs.accessData.token,
+                    'Authorization':'Bearer ' + Common.getToken(),
                     'Accept':'application/json'
                 }
   });
@@ -792,12 +798,12 @@ cs.getProfile = function(url) {
 cs.getTargetToken = function(extCellUrl) {
   return $.ajax({
                 type: "POST",
-                url: cs.accessData.cellUrl + '__token',
+                url: Common.getCellUrl() + '__token',
                 processData: true,
         dataType: 'json',
                 data: {
                         grant_type: "refresh_token",
-                        refresh_token: cs.accessData.refToken,
+                        refresh_token: Common.getRefressToken(),
                         p_target: extCellUrl
                 },
         headers: {'Accept':'application/json'}
@@ -821,7 +827,7 @@ cs.getJissekiLatestDateAPI = function() {
         type: 'GET',
         url: Common.getTargetUrl() + '/GenkiKunData/jisseki?$filter=id+eq+%27' + id + '%27&$top=1&$orderby=jisseki_date%20desc',
         headers: {
-            'Authorization':'Bearer ' + cs.accessData.token,
+            'Authorization':'Bearer ' + Common.getToken(),
             'Accept':'application/json'
         }
     });
@@ -832,7 +838,7 @@ cs.getSokuteiLatestDateAPI = function() {
         type: 'GET',
         url: Common.getTargetUrl() + '/GenkiKunData/sokutei?$filter=id+eq+%27' + id + '%27&$top=1&$orderby=sokutei_date%20desc',
         headers: {
-            'Authorization':'Bearer ' + cs.accessData.token,
+            'Authorization':'Bearer ' + Common.getToken(),
             'Accept':'application/json'
         }
     });
@@ -843,7 +849,7 @@ cs.getShokujiLatestDateAPI = function() {
         type: 'GET',
         url: Common.getTargetUrl() + '/GenkiKunData/shokuji?$filter=id+eq+%27' + id + '%27&$top=1&$orderby=shokuji_date%20desc',
         headers: {
-            'Authorization':'Bearer ' + cs.accessData.token,
+            'Authorization':'Bearer ' + Common.getToken(),
             'Accept':'application/json'
         }
     });
@@ -871,7 +877,7 @@ cs.getDataAPI = function(prevDate) {
       },
       headers:{
           'Accept':'application/json',
-          'Authorization':'Bearer ' + cs.accessData.token
+          'Authorization':'Bearer ' + Common.getToken()
       }
   });
 };
@@ -895,7 +901,7 @@ cs.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRelTar
 
     return $.ajax({
             type: "POST",
-            url: cs.accessData.cellUrl + '__message/send',
+            url: Common.getCellUrl() + '__message/send',
             data: JSON.stringify(data),
             headers: {
                     'Authorization':'Bearer ' + msgToken
@@ -910,9 +916,9 @@ cs.deleteExtCellLinkRelation = function(extCell, relName) {
     var cellName = urlArray[3];
     return $.ajax({
             type: "DELETE",
-            url: cs.accessData.cellUrl + '__ctl/ExtCell(\'' + hProt + '%3A%2F%2F' + fqdn + '%2F' + cellName + '%2F\')/$links/_Relation(Name=\'' + relName + '\',_Box.Name=\'' + cs.accessData.boxName + '\')',
+            url: Common.getCellUrl() + '__ctl/ExtCell(\'' + hProt + '%3A%2F%2F' + fqdn + '%2F' + cellName + '%2F\')/$links/_Relation(Name=\'' + relName + '\',_Box.Name=\'' + Common.getBoxName() + '\')',
             headers: {
-              'Authorization':'Bearer ' + cs.accessData.token
+              'Authorization':'Bearer ' + Common.getToken()
             }
     });
 };
@@ -920,11 +926,9 @@ cs.deleteExtCellLinkRelation = function(extCell, relName) {
 cs.getReceivedMessageAPI = function() {
   return $.ajax({
                 type: "GET",
-                //url: cs.accessData.cellUrl + '__ctl/ReceivedMessage?$filter=startswith%28Title,%27MyBoard%27%29&$orderby=__published%20desc',
-                //url: cs.accessData.cellUrl + '__ctl/ReceivedMessage?$filter=_Box.Name+eq+%27' + cs.accessData.boxName + '%27&$orderby=__published%20desc',
-                url: cs.accessData.cellUrl + '__ctl/ReceivedMessage?$orderby=__published%20desc',
+                url: Common.getCellUrl() + '__ctl/ReceivedMessage?$orderby=__published%20desc',
                 headers: {
-                    'Authorization':'Bearer ' + cs.accessData.token,
+                    'Authorization':'Bearer ' + Common.getToken(),
                     'Accept':'application/json'
                 }
   });

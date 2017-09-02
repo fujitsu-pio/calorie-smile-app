@@ -34,6 +34,8 @@ $(document).ready(function() {
         }
     }, function(err, t) {
         initJqueryI18next();
+
+        Common.appendCommonDialog();
         
         additionalCallback();
         

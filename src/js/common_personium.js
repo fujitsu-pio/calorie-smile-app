@@ -43,10 +43,10 @@ cs.changeStatusMessageAPI = function(uuid, command) {
     data.Command = command;
     return $.ajax({
             type: "POST",
-            url: cs.accessData.cellUrl + '__message/received/' + uuid,
+            url: Common.getCellUrl() + '__message/received/' + uuid,
             data: JSON.stringify(data),
             headers: {
-                    'Authorization':'Bearer ' + cs.accessData.token
+                    'Authorization':'Bearer ' + Common.getToken()
             }
     })
 };

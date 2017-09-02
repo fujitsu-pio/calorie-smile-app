@@ -109,7 +109,7 @@ cs.getGenkiAccessInfoAPI = function() {
         url: Common.getTargetUrl() + '/GenkiKunBox/genkiAccessInfo.json',
         dataType: "text",
         headers: {
-            'Authorization':'Bearer ' + cs.accessData.token,
+            'Authorization':'Bearer ' + Common.getToken(),
             'Accept':'application/text'
         }
     });
@@ -124,7 +124,6 @@ cs.loginGenki = function(tempData) {
     var pw = tempData.Pw;
     return $.ajax({
         type: "POST",
-        //url: cs.accessData.target + '/GenkiKunService/getToken?targetUrl=' + url + 'newpersonium/Response&id=' + id + '&pass=' + pw,
         url: Common.getTargetUrl() + '/GenkiKunService/getToken',
         data: {
             'targetUrl': url + 'newpersonium/Response',
@@ -133,7 +132,7 @@ cs.loginGenki = function(tempData) {
         },
         headers: {
             'Accept':'application/json',
-            'Authorization':'Bearer ' + cs.accessData.token
+            'Authorization':'Bearer ' + Common.getToken()
         }
     });
 };
