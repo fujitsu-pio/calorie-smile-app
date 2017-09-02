@@ -14,39 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-$(document).ready(function() {
+additionalCallback = function() {
     cs.dataCnt = 0;
     cs.updCnt = 0;
     cs.insCnt = 0;
     cs.failCnt = 0;
     cs.debugCnt = 0;
-    
-    i18next
-    .use(i18nextXHRBackend)
-    .use(i18nextBrowserLanguageDetector)
-    .init({
-        fallbackLng: 'en',
-        ns: getNamesapces(),
-        defaultNS: 'common',
-        debug: true,
-        backend: {
-            // load from i18next-gitbook repo
-            loadPath: './locales/{{lng}}/{{ns}}.json',
-            crossDomain: true
-        }
-    }, function(err, t) {
-        initJqueryI18next();
 
-        Common.appendCommonDialog();
-        
-        additionalCallback();
-        
-        updateContent();
-    });
-});
-
-additionalCallback = function() {
-    cs.accessData = JSON.parse(sessionStorage.getItem("accessInfo"));
+    Common.accessData = JSON.parse(sessionStorage.getItem("Common.accessData"));
+    cs.accessData = JSON.parse(sessionStorage.getItem("cs.accessInfo"));
 
     if (!Common.checkParam()) {
         // cannot do anything to recover
@@ -227,7 +203,7 @@ cs.updateGenkikunData = function(resultJ, resultS, resultSh) {
 
         var shokujiInfo = shokuji[i].shokujiInfo;
         cs.dataCnt += shokujiInfo.length;
-cs.debugCnt += shokujiInfo.length
+        cs.debugCnt += shokujiInfo.length
         for (var j in shokujiInfo) {
             var jsonInfo = {
                 "id":id
@@ -587,12 +563,15 @@ cs.dispAllowedCellListAfter = function(extUrl, no) {
 };
 
 cs.appendAllowedCellList = function(extUrl, dispName, no) {
-    $("#allowedCellList").append('<tr id="deleteExtCellRel' + no + '"><td class="paddingTd">' + dispName + '</td><td><button onClick="cs.notAllowedCell(\'' + extUrl + '\', ' + no + ')">' + i18next.t("release") + '</button></td></tr>');
+    $("#allowedCellList")
+        .append('<tr id="deleteExtCellRel' + no + '"><td class="paddingTd">' + dispName + '</td><td><button onClick="cs.notAllowedCell(this)" data-ext-url="' + extUrl + '"data-i18n="btn.release">' + '</button></td></tr>')
+        .localize();
 };
 
-cs.notAllowedCell = function(extUrl, no) {
+cs.notAllowedCell = function(aDom) {
+    let extUrl = $(aDom).data("extUrl");
     cs.deleteExtCellLinkRelation(extUrl, 'ShokujiViewer').done(function() {
-        $("#deleteExtCellRel" + no).remove();
+        $(aDom).closest("tr").remove();
     });
 };
 
@@ -614,8 +593,8 @@ cs.getReceiveMessage = function() {
                         html += '<table class="display-table"><tr><td width="80%">' + body + '</td></tr></table>';
                     } else {
                         html += '<table class="display-table"><tr><td width="80%">' + body + '</td>';
-                        html += '<td width="10%"><button onClick="cs.approvalRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">' + i18next.t("approve") +'</button></td>';
-                        html += '<td width="10%"><button onClick="cs.rejectionRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">' + i18next.t("decline") + '</button></td>';
+                        html += '<td width="10%"><button onClick="cs.approvalRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">' + i18next.t("btn.approve") +'</button></td>';
+                        html += '<td width="10%"><button onClick="cs.rejectionRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">' + i18next.t("btn.decline") + '</button></td>';
                         html += '</tr></table>';
                     }
                     html += '</div></div></div>';
@@ -640,7 +619,7 @@ cs.dispPhotoImage = function(cellUrl, token, title) {
         cs.accessData.Title = i18next.t("me");
     }
     
-    sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
+    sessionStorage.setItem("cs.accessInfo", JSON.stringify(cs.accessData));
     location.href = "./genkiPhoto.html";
 };
 
@@ -796,7 +775,7 @@ cs.getProfile = function(url) {
 };
 
 cs.getTargetToken = function(extCellUrl) {
-  return $.ajax({
+    return $.ajax({
                 type: "POST",
                 url: Common.getCellUrl() + '__token',
                 processData: true,
@@ -807,7 +786,7 @@ cs.getTargetToken = function(extCellUrl) {
                         p_target: extCellUrl
                 },
         headers: {'Accept':'application/json'}
-         });
+    });
 };
 
 cs.getPhotoAPI = function(targetCell, token) {

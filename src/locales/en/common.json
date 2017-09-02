@@ -1,8 +1,5 @@
 {
     "menu": "Menu",
-    "release": "Ungrant",
-    "approve": "Approve",
-    "decline": "Decline",
     "readRequestTitle": "$t(glossary:readRequestTarget)_Read Permission Request",
     "readRequestBody": "Please grant read permission for your $t(glossary:readRequestTarget).",
     "readResponseTitle": "$t(glossary:readRequestTarget)_Read Permission Reply",
@@ -31,5 +28,13 @@
             "dataNotFound": "Data not found.",
             "failedToRefreshToken": "Failed to refresh token.<br>Please reload page."
         }
+    },
+    "btn": {
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "save": "Save",
+        "release": "Ungrant",
+        "approve": "Approve",
+        "decline": "Decline"
     }
 }

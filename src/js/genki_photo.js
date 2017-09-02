@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 $(document).ready(function() {
-    cs.accessData = JSON.parse(sessionStorage.getItem("accessInfo"));
+    Common.accessData = JSON.parse(sessionStorage.getItem("Common.accessData"));
+    cs.accessData = JSON.parse(sessionStorage.getItem("cs.accessInfo"));
     cs.accessData.skip = 0;
     cs.accessData.top = 50;
     

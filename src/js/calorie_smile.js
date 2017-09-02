@@ -33,7 +33,8 @@ getNamesapces = function(){
  * clean up data for Calorie Smile
  */
 cleanUpData = function() {
-  sessionStorage.setItem("accessInfo", null);
+    sessionStorage.removeItem("Common.accessData");
+    sessionStorage.removeItem("cs.accessInfo");
 };
 
 cs.updateSessionStorageGenkikun = function(json, loginData) {
@@ -41,7 +42,7 @@ cs.updateSessionStorageGenkikun = function(json, loginData) {
     cs.accessData.genkiUrl = loginData.Url;
     cs.accessData.genkiToken = json.access_token;
     cs.accessData.genkiexpires = json.expires_in;
-    sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
+    sessionStorage.setItem("cs.accessInfo", JSON.stringify(cs.accessData));
 };
 
 cs.getCalorieSmileServerToken = function(startAnimation, stopAnimation, loginSucceedCallback) {
