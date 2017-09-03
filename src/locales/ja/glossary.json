@@ -13,6 +13,9 @@
         "action": ">ログインし直して下さい。",
         "btnOk": "OK"
     },
+    "irrecoverableErrorDialog": {
+        "title": "$(glossary:title)を終了します ..."
+    },
     "dataSubject": {
         "label": "セル"
     },

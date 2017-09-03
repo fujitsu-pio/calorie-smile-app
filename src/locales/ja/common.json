@@ -1,4 +1,5 @@
 {
+    "me": "自分",
     "menu": {
         "title": "メニュー",
         "notification": {
@@ -6,17 +7,23 @@
             "header": "$t(menu.notification.title)一覧"
         }
     },
-    "readRequestTitle": "$t(glossary:readRequestTarget)_閲覧許可依頼",
-    "readRequestBody": "$t(glossary:readRequestBodyTarget)の閲覧許可をお願いします。",
-    "readResponseTitle": "$t(glossary:readRequestTarget)_登録依頼返信",
-    "readResponseApprovedBody": "承認しました。",
-    "readResponseDeclinedBody": "拒否しました。",
-    "me": "自分",
+    "navbar": {
+        "toggleNavigation": "Toggle navigation",
+        "appName": "$t(glossary:title)"
+    },
     "sessionExpiredDialog": {
         "title": "$t(glossary:sessionExpiredDialog.title)",
         "message": "セッションの期限が切れています。<br>$t(glossary:sessionExpiredDialog.action)",
         "btnOk": "$t(glossary:sessionExpiredDialog.btnOk)"
     },
+    "irrecoverableErrorDialog": {
+        "title": "$t(glossary:irrecoverableErrorDialog.title)"
+    },
+    "readRequestTitle": "$t(glossary:readRequestTarget)_閲覧許可依頼",
+    "readRequestBody": "$t(glossary:readRequestBodyTarget)の閲覧許可をお願いします。",
+    "readResponseTitle": "$t(glossary:readRequestTarget)_登録依頼返信",
+    "readResponseApprovedBody": "承認しました。",
+    "readResponseDeclinedBody": "拒否しました。",
     "error": {
         "title": "エラー",
         "label": "エラー"

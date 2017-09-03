@@ -13,6 +13,9 @@
         "action": "Please login again.",
         "btnOk": "OK"
     },
+    "irrecoverableErrorDialog": {
+        "title": "Terminating $(glossary:title) ..."
+    },
     "dataSubject": {
         "label": "cell"
     },
