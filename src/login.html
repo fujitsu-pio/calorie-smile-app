@@ -25,18 +25,20 @@
 
     <div data-i18n="login:description"></div>
 
-    <div class="login-form-controls">
-      <div>
-        <input id="iGenkikunId" type="text" data-i18n="[placeholder]login:id" value="">
+    <form onSubmit="manualLogin();return false;">
+      <div class="login-form-controls">
+        <div>
+          <input id="iGenkikunId" type="text" data-i18n="[placeholder]login:id" value="">
+        </div>
+        <div>
+          <input id="iGenkikunPw" type="password" data-i18n="[placeholder]login:password" value="">
+        </div>
+        <div>
+          <button type="submit" class="login_btn round-btn" id="register" data-i18n="glossary:linkBtn"></button>
+        </div>
       </div>
-      <div>
-        <input id="iGenkikunPw" type="password" data-i18n="[placeholder]login:password" value="">
-      </div>
-      <div>
-        <button class="login_btn round-btn" id="register" onClick="manualLogin();return false;" data-i18n="glossary:linkBtn"></button>
-      </div>
-    </div>
-    <input id="iGenkikunUrl" type="hidden" value="https://pdsc.questcom.co.jp/"/>
+      <input id="iGenkikunUrl" type="hidden" value="https://pdsc.questcom.co.jp/"/>
+    </form>
     <!-- /login-form-controls -->
   </section>
   <section class="login-section">
