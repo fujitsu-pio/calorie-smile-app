@@ -1,7 +1,13 @@
 {
-    "menu": "メニュー",
+    "menu": {
+        "title": "メニュー",
+        "notification": {
+            "title": "通知",
+            "header": "$t(menu.notification.title)一覧"
+        }
+    },
     "readRequestTitle": "$t(glossary:readRequestTarget)_閲覧許可依頼",
-    "readRequestBody": "$t(glossary:readRequestTarget)の閲覧許可をお願いします。",
+    "readRequestBody": "$t(glossary:readRequestBodyTarget)の閲覧許可をお願いします。",
     "readResponseTitle": "$t(glossary:readRequestTarget)_登録依頼返信",
     "readResponseApprovedBody": "承認しました。",
     "readResponseDeclinedBody": "拒否しました。",
@@ -11,10 +17,13 @@
         "message": "セッションの期限が切れています。<br>$t(glossary:sessionExpiredDialog.action)",
         "btnOk": "$t(glossary:sessionExpiredDialog.btnOk)"
     },
+    "error": {
+        "title": "エラー",
+        "label": "エラー"
+    },
     "msg": {
         "info": {
-            "collaboratingData": "データ連携中です...",
-            "pleaseSelectTargetCell": "対象セルを選択して下さい。",
+            "pleaseSelectTargetCell": "対象$t(glossary:dataSubject.label)を選択して下さい。",
             "messageSent": "メッセージを送信しました。"
         },
         "error": {

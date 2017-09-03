@@ -50,3 +50,53 @@ cs.changeStatusMessageAPI = function(uuid, command) {
             }
     })
 };
+
+cs.getAllowedCellList = function() {
+    $.ajax({
+        type: "GET",
+        url: Common.getCellUrl() + '__ctl/Relation(Name=\'ShokujiViewer\',_Box\.Name=\'' + Common.getBoxName() + '\')/$links/_ExtCell',
+        headers: {
+            'Authorization':'Bearer ' + Common.getToken(),
+            'Accept':'application/json'
+        }
+    }).done(function(data) {
+        cs.dispAllowedCellList(data);
+    });
+};
+
+cs.dispAllowedCellList = function(json) {
+    $("#allowedCellList").empty();
+    var results = json.d.results;
+    if (results.length > 0) {
+        results.sort(function(val1, val2) {
+          return (val1.uri < val2.uri ? 1 : -1);
+        })
+
+        for (var i in results) {
+          var uri = results[i].uri;
+          var matchUrl = uri.match(/\(\'(.+)\'\)/);
+          var extUrl = matchUrl[1];
+
+          cs.dispAllowedCellListAfter(extUrl, i);
+        }
+    }
+};
+
+cs.dispAllowedCellListAfter = function(extUrl, no) {
+    cs.getProfile(extUrl).done(function(data) {
+        var dispName = Common.getCellNameFromUrl(extUrl);
+        if (data !== null) {
+            dispName = data.DisplayName;
+        }
+        cs.appendAllowedCellList(extUrl, dispName, no)
+    }).fail(function() {
+        var dispName = Common.getCellNameFromUrl(extUrl);
+        cs.appendAllowedCellList(extUrl, dispName, no)
+    });
+};
+
+cs.appendAllowedCellList = function(extUrl, dispName, no) {
+    $("#allowedCellList")
+        .append('<tr id="deleteExtCellRel' + no + '"><td class="paddingTd">' + dispName + '</td><td><button onClick="cs.notAllowedCell(this)" data-ext-url="' + extUrl + '"data-i18n="btn.release">' + '</button></td></tr>')
+        .localize();
+};
