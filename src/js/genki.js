@@ -58,7 +58,7 @@ additionalCallback = function() {
         } else {
             var title = i18next.t("readRequestTitle");
             var body = i18next.t("readRequestBody");
-            var reqRel = Common.getAppCellUrl() + "__relation/__/ShokujiViewer";
+            var reqRel = Common.getAppCellUrl() + "__relation/__/" + getAppReadRelation();
             cs.sendMessage(null, value, "req.relation.build", title, body, reqRel, Common.getCellUrl());
         }
     });
@@ -518,13 +518,6 @@ cs.appendRequestCells = function(extUrl, dispName) {
     $("#requestCells").append('<option value="' + extUrl + '">' + dispName + '</option>');
 };
 
-cs.notAllowedCell = function(aDom) {
-    let extUrl = $(aDom).data("extUrl");
-    cs.deleteExtCellLinkRelation(extUrl, 'ShokujiViewer').done(function() {
-        $(aDom).closest("tr").remove();
-    });
-};
-
 cs.getReceiveMessage = function() {
     $("#messageList").empty();
     cs.getReceivedMessageAPI().done(function(data) {
@@ -571,22 +564,6 @@ cs.dispPhotoImage = function(cellUrl, token, title) {
     
     sessionStorage.setItem("cs.accessInfo", JSON.stringify(cs.accessData));
     location.href = "./genkiPhoto.html";
-};
-
-cs.sendMessage = function(uuid, extCell, type, title, body, reqRel, reqRelTar) {
-    Common.getAppToken().done(function(appToken) {
-        Common.getAppCellToken(appToken.access_token).done(function(msgToken) {
-            cs.sendMessageAPI(uuid, extCell, type, title, body, reqRel, reqRelTar, msgToken.access_token).done(function(data) {
-                $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.messageSent"));
-            }).fail(function(data) {
-                $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
-            });
-        }).fail(function(msgToken) {
-            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
-        });
-    }).fail(function(appToken) {
-        $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
-    });
 };
 
 // Photo Disp
@@ -809,47 +786,6 @@ cs.getDataAPI = function(prevDate) {
           'Authorization':'Bearer ' + Common.getToken()
       }
   });
-};
-
-cs.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRelTar, msgToken) {
-    var data = {};
-    data.BoxBound = true;
-    data.InReplyTo = uuid;
-    data.To = extCell;
-    data.ToRelation = null
-    data.Type = type;
-    data.Title = title;
-    data.Body = body;
-    data.Priority = 3;
-    if (reqRel) {
-        data.RequestRelation = reqRel;
-    }
-    if (reqRelTar) {
-        data.RequestRelationTarget = reqRelTar;
-    }
-
-    return $.ajax({
-            type: "POST",
-            url: Common.getCellUrl() + '__message/send',
-            data: JSON.stringify(data),
-            headers: {
-                    'Authorization':'Bearer ' + msgToken
-            }
-    })
-};
-
-cs.deleteExtCellLinkRelation = function(extCell, relName) {
-    var urlArray = extCell.split("/");
-    var hProt = urlArray[0].substring(0, urlArray[0].length - 1);
-    var fqdn = urlArray[2];
-    var cellName = urlArray[3];
-    return $.ajax({
-            type: "DELETE",
-            url: Common.getCellUrl() + '__ctl/ExtCell(\'' + hProt + '%3A%2F%2F' + fqdn + '%2F' + cellName + '%2F\')/$links/_Relation(Name=\'' + relName + '\',_Box.Name=\'' + Common.getBoxName() + '\')',
-            headers: {
-              'Authorization':'Bearer ' + Common.getToken()
-            }
-    });
 };
 
 cs.getReceivedMessageAPI = function() {

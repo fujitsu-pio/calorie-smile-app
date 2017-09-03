@@ -52,9 +52,18 @@ cs.changeStatusMessageAPI = function(uuid, command) {
 };
 
 cs.getAllowedCellList = function() {
+    let extCellUrl = [
+        Common.getCellUrl(),
+        '__ctl/Relation(Name=\'',
+        getAppReadRelation(),
+        '\',_Box\.Name=\'',
+        Common.getBoxName(),
+        '\')/$links/_ExtCell'
+    ].join("");
+    
     $.ajax({
         type: "GET",
-        url: Common.getCellUrl() + '__ctl/Relation(Name=\'ShokujiViewer\',_Box\.Name=\'' + Common.getBoxName() + '\')/$links/_ExtCell',
+        url: extCellUrl,
         headers: {
             'Authorization':'Bearer ' + Common.getToken(),
             'Accept':'application/json'
@@ -99,4 +108,68 @@ cs.appendAllowedCellList = function(extUrl, dispName, no) {
     $("#allowedCellList")
         .append('<tr id="deleteExtCellRel' + no + '"><td class="paddingTd">' + dispName + '</td><td><button onClick="cs.notAllowedCell(this)" data-ext-url="' + extUrl + '"data-i18n="btn.release">' + '</button></td></tr>')
         .localize();
+};
+
+cs.notAllowedCell = function(aDom) {
+    let extUrl = $(aDom).data("extUrl");
+    cs.deleteExtCellLinkRelation(extUrl, getAppReadRelation()).done(function() {
+        $(aDom).closest("tr").remove();
+    });
+};
+
+cs.deleteExtCellLinkRelation = function(extCell, relName) {
+    var urlArray = extCell.split("/");
+    var hProt = urlArray[0].substring(0, urlArray[0].length - 1);
+    var fqdn = urlArray[2];
+    var cellName = urlArray[3];
+    return $.ajax({
+            type: "DELETE",
+            url: Common.getCellUrl() + '__ctl/ExtCell(\'' + hProt + '%3A%2F%2F' + fqdn + '%2F' + cellName + '%2F\')/$links/_Relation(Name=\'' + relName + '\',_Box.Name=\'' + Common.getBoxName() + '\')',
+            headers: {
+              'Authorization':'Bearer ' + Common.getToken()
+            }
+    });
+};
+
+cs.sendMessage = function(uuid, extCell, type, title, body, reqRel, reqRelTar) {
+    Common.getAppToken().done(function(appToken) {
+        Common.getAppCellToken(appToken.access_token).done(function(msgToken) {
+            cs.sendMessageAPI(uuid, extCell, type, title, body, reqRel, reqRelTar, msgToken.access_token).done(function(data) {
+                $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.messageSent"));
+            }).fail(function(data) {
+                $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
+            });
+        }).fail(function(msgToken) {
+            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
+        });
+    }).fail(function(appToken) {
+        $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
+    });
+};
+
+cs.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRelTar, msgToken) {
+    var data = {};
+    data.BoxBound = true;
+    data.InReplyTo = uuid;
+    data.To = extCell;
+    data.ToRelation = null
+    data.Type = type;
+    data.Title = title;
+    data.Body = body;
+    data.Priority = 3;
+    if (reqRel) {
+        data.RequestRelation = reqRel;
+    }
+    if (reqRelTar) {
+        data.RequestRelationTarget = reqRelTar;
+    }
+
+    return $.ajax({
+            type: "POST",
+            url: Common.getCellUrl() + '__message/send',
+            data: JSON.stringify(data),
+            headers: {
+                    'Authorization':'Bearer ' + msgToken
+            }
+    })
 };

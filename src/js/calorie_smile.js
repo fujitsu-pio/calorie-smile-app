@@ -29,6 +29,10 @@ getNamesapces = function(){
     return ['common', 'glossary', 'login'];
 };
 
+getAppReadRelation = function() {
+    return 'ShokujiViewer';
+}
+
 /*
  * clean up data for Calorie Smile
  */
