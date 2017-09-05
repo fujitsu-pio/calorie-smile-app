@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 
-/*
- * The following methods should be shared amoung all cell applications.
- */
 cs.approvalRel = function(extCell, uuid, msgId) {
     cs.changeStatusMessageAPI(uuid, "approved").done(function() {
         $("#" + msgId).remove();
@@ -104,6 +101,15 @@ cs.dispAllowedCellListAfter = function(extUrl, no) {
     });
 };
 
+cs.getProfile = function(url) {
+    return $.ajax({
+    type: "GET",
+    url: url + '__/profile.json',
+    dataType: 'json',
+        headers: {'Accept':'application/json'}
+    })
+};
+
 cs.appendAllowedCellList = function(extUrl, dispName, no) {
     $("#allowedCellList")
         .append('<tr id="deleteExtCellRel' + no + '"><td class="paddingTd">' + dispName + '</td><td><button onClick="cs.notAllowedCell(this)" data-ext-url="' + extUrl + '"data-i18n="btn.release">' + '</button></td></tr>')
@@ -129,6 +135,105 @@ cs.deleteExtCellLinkRelation = function(extCell, relName) {
               'Authorization':'Bearer ' + Common.getToken()
             }
     });
+};
+
+cs.getOtherAllowedCells = function() {
+    cs.getExtCell().done(function(json) {
+        var objSel = document.getElementById("otherAllowedCells");
+        if (objSel.hasChildNodes()) {
+          while (objSel.childNodes.length > 0) {
+            objSel.removeChild(objSel.firstChild);
+          }
+        }
+        objSel = document.getElementById("requestCells");
+        if (objSel.hasChildNodes()) {
+          while (objSel.childNodes.length > 0) {
+            objSel.removeChild(objSel.firstChild);
+          }
+        }
+
+        var results = json.d.results;
+        if (results.length > 0) {
+            results.sort(function(val1, val2) {
+              return (val1.Url < val2.Url ? 1 : -1);
+            })
+
+            for (var i in results) {
+                var url = results[i].Url;
+                cs.dispOtherAllowedCells(url);
+            }
+        }
+    });
+};
+
+cs.getExtCell = function() {
+  return $.ajax({
+                type: "GET",
+                url: Common.getCellUrl() + '__ctl/ExtCell',
+                headers: {
+                    'Authorization':'Bearer ' + Common.getToken(),
+                    'Accept':'application/json'
+                }
+  });
+};
+
+cs.dispOtherAllowedCells = function(extUrl) {
+    cs.getProfile(extUrl).done(function(data) {
+        var dispName = Common.getCellNameFromUrl(extUrl);
+        if (data !== null) {
+            dispName = data.DisplayName;
+        }
+        cs.checkOtherAllowedCells(extUrl, dispName)
+    }).fail(function() {
+        var dispName = Common.getCellNameFromUrl(extUrl);
+        cs.checkOtherAllowedCells(extUrl, dispName)
+    });
+};
+
+cs.checkOtherAllowedCells = function(extUrl, dispName) {
+    cs.getTargetToken(extUrl).done(function(extData) {
+        cs.getPhotoAPI(extUrl + Common.getBoxName(), extData.access_token).done(function(data) {
+            cs.appendOtherAllowedCells(extUrl, dispName);
+        }).fail(function(data) {
+            if (data.status !== 404) {
+                cs.appendRequestCells(extUrl, dispName);
+            }
+        });
+    });
+};
+
+cs.getTargetToken = function(extCellUrl) {
+    return $.ajax({
+                type: "POST",
+                url: Common.getCellUrl() + '__token',
+                processData: true,
+        dataType: 'json',
+                data: {
+                        grant_type: "refresh_token",
+                        refresh_token: Common.getRefressToken(),
+                        p_target: extCellUrl
+                },
+        headers: {'Accept':'application/json'}
+    });
+};
+
+cs.getPhotoAPI = function(targetCell, token) {
+    return $.ajax({
+        type: 'GET',
+        url: targetCell + getAppDataPath(),
+        headers: {
+            'Authorization':'Bearer ' + token,
+            'Accept':'application/json'
+        }
+    });
+};
+
+cs.appendOtherAllowedCells = function(extUrl, dispName) {
+    $("#otherAllowedCells").append('<option value="' + extUrl + '">' + dispName + '</option>');
+};
+
+cs.appendRequestCells = function(extUrl, dispName) {
+    $("#requestCells").append('<option value="' + extUrl + '">' + dispName + '</option>');
 };
 
 cs.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRelTar) {

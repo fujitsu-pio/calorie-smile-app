@@ -31,7 +31,11 @@ getNamesapces = function(){
 
 getAppReadRelation = function() {
     return 'ShokujiViewer';
-}
+};
+
+getAppDataPath = function() {
+    return '/GenkiKunData/shokuji_info?$top=1';
+};
 
 /*
  * clean up data for Calorie Smile

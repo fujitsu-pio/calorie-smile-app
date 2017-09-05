@@ -33,7 +33,7 @@ additionalCallback = function() {
     Common.setIdleTime();
     cs.transGenki();
 
-    $('#bExtCalSmile').on('click', function () {
+    $('#bReadAnotherCell').on('click', function () {
         var value = $("#otherAllowedCells option:selected").val();
         if (value == undefined || value === "") {
             $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.pleaseSelectTargetCell"));
@@ -456,68 +456,6 @@ cs.updateLinkageProgress = function() {
     }
 };
 
-cs.getOtherAllowedCells = function() {
-    cs.getExtCell().done(function(json) {
-        var objSel = document.getElementById("otherAllowedCells");
-        if (objSel.hasChildNodes()) {
-          while (objSel.childNodes.length > 0) {
-            objSel.removeChild(objSel.firstChild);
-          }
-        }
-        objSel = document.getElementById("requestCells");
-        if (objSel.hasChildNodes()) {
-          while (objSel.childNodes.length > 0) {
-            objSel.removeChild(objSel.firstChild);
-          }
-        }
-
-        var results = json.d.results;
-        if (results.length > 0) {
-            results.sort(function(val1, val2) {
-              return (val1.Url < val2.Url ? 1 : -1);
-            })
-
-            for (var i in results) {
-                var url = results[i].Url;
-                cs.dispOtherAllowedCells(url);
-            }
-        }
-    });
-};
-
-cs.dispOtherAllowedCells = function(extUrl) {
-    cs.getProfile(extUrl).done(function(data) {
-        var dispName = Common.getCellNameFromUrl(extUrl);
-        if (data !== null) {
-            dispName = data.DisplayName;
-        }
-        cs.checkOtherAllowedCells(extUrl, dispName)
-    }).fail(function() {
-        var dispName = Common.getCellNameFromUrl(extUrl);
-        cs.checkOtherAllowedCells(extUrl, dispName)
-    });
-};
-
-cs.checkOtherAllowedCells = function(extUrl, dispName) {
-    cs.getTargetToken(extUrl).done(function(extData) {
-        cs.getPhotoAPI(extUrl + Common.getBoxName(), extData.access_token).done(function(data) {
-            cs.appendOtherAllowedCells(extUrl, dispName);
-        }).fail(function(data) {
-            if (data.status !== 404) {
-                cs.appendRequestCells(extUrl, dispName);
-            }
-        });
-    });
-};
-
-cs.appendOtherAllowedCells = function(extUrl, dispName) {
-    $("#otherAllowedCells").append('<option value="' + extUrl + '">' + dispName + '</option>');
-};
-
-cs.appendRequestCells = function(extUrl, dispName) {
-    $("#requestCells").append('<option value="' + extUrl + '">' + dispName + '</option>');
-};
-
 cs.getReceiveMessage = function() {
     $("#messageList").empty();
     cs.getReceivedMessageAPI().done(function(data) {
@@ -680,52 +618,6 @@ cs.openSlide = function() {
     $(".overlay").toggleClass('overlay-on');
     $(".slide-menu").toggleClass('slide-on');
 }
-
-cs.getExtCell = function() {
-  return $.ajax({
-                type: "GET",
-                url: Common.getCellUrl() + '__ctl/ExtCell',
-                headers: {
-                    'Authorization':'Bearer ' + Common.getToken(),
-                    'Accept':'application/json'
-                }
-  });
-};
-
-cs.getProfile = function(url) {
-    return $.ajax({
-    type: "GET",
-    url: url + '__/profile.json',
-    dataType: 'json',
-        headers: {'Accept':'application/json'}
-    })
-};
-
-cs.getTargetToken = function(extCellUrl) {
-    return $.ajax({
-                type: "POST",
-                url: Common.getCellUrl() + '__token',
-                processData: true,
-        dataType: 'json',
-                data: {
-                        grant_type: "refresh_token",
-                        refresh_token: Common.getRefressToken(),
-                        p_target: extCellUrl
-                },
-        headers: {'Accept':'application/json'}
-    });
-};
-
-cs.getPhotoAPI = function(targetCell, token) {
-    return $.ajax({
-        type: 'GET',
-        url: targetCell + '/GenkiKunData/shokuji_info?$top=1',
-        headers: {
-            'Authorization':'Bearer ' + token,
-            'Accept':'application/json'
-        }
-    });
-};
 
 cs.getJissekiLatestDateAPI = function() {
     var id = cs.accessData.id;
