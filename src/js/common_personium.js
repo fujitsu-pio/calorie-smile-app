@@ -134,7 +134,7 @@ cs.deleteExtCellLinkRelation = function(extCell, relName) {
 cs.sendMessage = function(uuid, extCell, type, title, body, reqRel, reqRelTar) {
     Common.getAppToken().done(function(appToken) {
         Common.getAppCellToken(appToken.access_token).done(function(msgToken) {
-            cs.sendMessageAPI(uuid, extCell, type, title, body, reqRel, reqRelTar, msgToken.access_token).done(function(data) {
+            cs.sendMessageAPI(uuid, extCell, type, title, body, reqRel, reqRelTar).done(function(data) {
                 $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.messageSent"));
             }).fail(function(data) {
                 $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
@@ -147,7 +147,7 @@ cs.sendMessage = function(uuid, extCell, type, title, body, reqRel, reqRelTar) {
     });
 };
 
-cs.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRelTar, msgToken) {
+cs.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRelTar) {
     var data = {};
     data.BoxBound = true;
     data.InReplyTo = uuid;
@@ -169,7 +169,7 @@ cs.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRelTar
             url: Common.getCellUrl() + '__message/send',
             data: JSON.stringify(data),
             headers: {
-                    'Authorization':'Bearer ' + msgToken
+                    'Authorization':'Bearer ' + Common.getToken()
             }
     })
 };
