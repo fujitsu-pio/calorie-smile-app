@@ -59,7 +59,7 @@ additionalCallback = function() {
             var title = i18next.t("readRequestTitle");
             var body = i18next.t("readRequestBody");
             var reqRel = Common.getAppCellUrl() + "__relation/__/" + getAppReadRelation();
-            cs.sendMessage(null, value, "req.relation.build", title, body, reqRel, Common.getCellUrl());
+            cs.sendMessageAPI(null, value, "req.relation.build", title, body, reqRel, Common.getCellUrl());
         }
     });
 

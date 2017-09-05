@@ -24,7 +24,7 @@ cs.approvalRel = function(extCell, uuid, msgId) {
         cs.getAllowedCellList();
         var title = i18next.t("readResponseTitle");
         var body = i18next.t("readResponseApprovedBody");
-        cs.sendMessage(uuid, extCell, "message", title, body);
+        cs.sendMessageAPI(uuid, extCell, "message", title, body);
     });
 };
 
@@ -34,7 +34,7 @@ cs.rejectionRel = function(extCell, uuid, msgId) {
         cs.getAllowedCellList();
         var title = i18next.t("readResponseTitle");
         var body = i18next.t("readResponseDeclinedBody");
-        cs.sendMessage(uuid, extCell, "message", title, body);
+        cs.sendMessageAPI(uuid, extCell, "message", title, body);
     });
 };
 
@@ -128,22 +128,6 @@ cs.deleteExtCellLinkRelation = function(extCell, relName) {
             headers: {
               'Authorization':'Bearer ' + Common.getToken()
             }
-    });
-};
-
-cs.sendMessage = function(uuid, extCell, type, title, body, reqRel, reqRelTar) {
-    Common.getAppToken().done(function(appToken) {
-        Common.getAppCellToken(appToken.access_token).done(function(msgToken) {
-            cs.sendMessageAPI(uuid, extCell, type, title, body, reqRel, reqRelTar).done(function(data) {
-                $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.messageSent"));
-            }).fail(function(data) {
-                $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
-            });
-        }).fail(function(msgToken) {
-            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
-        });
-    }).fail(function(appToken) {
-        $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
     });
 };
 
