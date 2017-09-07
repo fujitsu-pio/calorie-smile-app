@@ -38,9 +38,9 @@ additionalCallback = function() {
         if (value == undefined || value === "") {
             $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.pleaseSelectTargetCell"));
         } else {
-            cs.getTargetToken(value).done(function(extData) {
+            Common.getTargetToken(value).done(function(extData) {
                 var dispName = Common.getCellNameFromUrl(value);
-                cs.getProfile(value).done(function(data) {
+                Common.getProfile(value).done(function(data) {
                     if (data !== null) {
                         dispName = data.DisplayName;
                     }
@@ -59,7 +59,7 @@ additionalCallback = function() {
             var title = i18next.t("readRequestTitle");
             var body = i18next.t("readRequestBody");
             var reqRel = Common.getAppCellUrl() + "__relation/__/" + getAppReadRelation();
-            cs.sendMessageAPI(null, value, "req.relation.build", title, body, reqRel, Common.getCellUrl());
+            Common.sendMessageAPI(null, value, "req.relation.build", title, body, reqRel, Common.getCellUrl());
         }
     });
 
@@ -91,9 +91,9 @@ cs.receiveMessage = function() {
 
 cs.transGenki = function(json) {
     // 閲覧許可状況(外部セル)
-    cs.getOtherAllowedCells();
+    Common.getOtherAllowedCells();
     // 閲覧許可状況
-    cs.getAllowedCellList();
+    Common.getAllowedCellList();
     // 通知
     cs.getReceiveMessage();
 
@@ -474,8 +474,8 @@ cs.getReceiveMessage = function() {
                         html += '<table class="display-table"><tr><td width="80%">' + body + '</td></tr></table>';
                     } else {
                         html += '<table class="display-table"><tr><td width="80%">' + body + '</td>';
-                        html += '<td width="10%"><button onClick="cs.approvalRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">' + i18next.t("btn.approve") +'</button></td>';
-                        html += '<td width="10%"><button onClick="cs.rejectionRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">' + i18next.t("btn.decline") + '</button></td>';
+                        html += '<td width="10%"><button onClick="Common.approvalRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">' + i18next.t("btn.approve") +'</button></td>';
+                        html += '<td width="10%"><button onClick="Common.rejectionRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">' + i18next.t("btn.decline") + '</button></td>';
                         html += '</tr></table>';
                     }
                     html += '</div></div></div>';

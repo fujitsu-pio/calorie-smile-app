@@ -37,6 +37,15 @@ getAppDataPath = function() {
     return '/GenkiKunData/shokuji_info?$top=1';
 };
 
+getAppRequestInfo = function() {
+    return {
+        headers: {
+            'Authorization':'Bearer ' + token,
+            'Accept':'application/json'
+        }
+    }
+};
+
 /*
  * clean up data for Calorie Smile
  */

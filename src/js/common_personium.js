@@ -14,28 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+var Common = Common || {};
 
-cs.approvalRel = function(extCell, uuid, msgId) {
-    cs.changeStatusMessageAPI(uuid, "approved").done(function() {
+Common.approvalRel = function(extCell, uuid, msgId) {
+    Common.changeStatusMessageAPI(uuid, "approved").done(function() {
         $("#" + msgId).remove();
-        cs.getAllowedCellList();
+        Common.getAllowedCellList();
         var title = i18next.t("readResponseTitle");
         var body = i18next.t("readResponseApprovedBody");
-        cs.sendMessageAPI(uuid, extCell, "message", title, body);
+        Common.sendMessageAPI(uuid, extCell, "message", title, body);
     });
 };
 
-cs.rejectionRel = function(extCell, uuid, msgId) {
-    cs.changeStatusMessageAPI(uuid, "rejected").done(function() {
+Common.rejectionRel = function(extCell, uuid, msgId) {
+    Common.changeStatusMessageAPI(uuid, "rejected").done(function() {
         $("#" + msgId).remove();
-        cs.getAllowedCellList();
+        Common.getAllowedCellList();
         var title = i18next.t("readResponseTitle");
         var body = i18next.t("readResponseDeclinedBody");
-        cs.sendMessageAPI(uuid, extCell, "message", title, body);
+        Common.sendMessageAPI(uuid, extCell, "message", title, body);
     });
 };
 
-cs.changeStatusMessageAPI = function(uuid, command) {
+Common.changeStatusMessageAPI = function(uuid, command) {
     var data = {};
     data.Command = command;
     return $.ajax({
@@ -48,7 +49,7 @@ cs.changeStatusMessageAPI = function(uuid, command) {
     })
 };
 
-cs.getAllowedCellList = function() {
+Common.getAllowedCellList = function() {
     let extCellUrl = [
         Common.getCellUrl(),
         '__ctl/Relation(Name=\'',
@@ -66,11 +67,11 @@ cs.getAllowedCellList = function() {
             'Accept':'application/json'
         }
     }).done(function(data) {
-        cs.dispAllowedCellList(data);
+        Common.dispAllowedCellList(data);
     });
 };
 
-cs.dispAllowedCellList = function(json) {
+Common.dispAllowedCellList = function(json) {
     $("#allowedCellList").empty();
     var results = json.d.results;
     if (results.length > 0) {
@@ -83,25 +84,25 @@ cs.dispAllowedCellList = function(json) {
           var matchUrl = uri.match(/\(\'(.+)\'\)/);
           var extUrl = matchUrl[1];
 
-          cs.dispAllowedCellListAfter(extUrl, i);
+            Common.dispAllowedCellListAfter(extUrl, i);
         }
     }
 };
 
-cs.dispAllowedCellListAfter = function(extUrl, no) {
-    cs.getProfile(extUrl).done(function(data) {
+Common.dispAllowedCellListAfter = function(extUrl, no) {
+    Common.getProfile(extUrl).done(function(data) {
         var dispName = Common.getCellNameFromUrl(extUrl);
         if (data !== null) {
             dispName = data.DisplayName;
         }
-        cs.appendAllowedCellList(extUrl, dispName, no)
+        Common.appendAllowedCellList(extUrl, dispName, no)
     }).fail(function() {
         var dispName = Common.getCellNameFromUrl(extUrl);
-        cs.appendAllowedCellList(extUrl, dispName, no)
+        Common.appendAllowedCellList(extUrl, dispName, no)
     });
 };
 
-cs.getProfile = function(url) {
+Common.getProfile = function(url) {
     return $.ajax({
     type: "GET",
     url: url + '__/profile.json',
@@ -110,20 +111,20 @@ cs.getProfile = function(url) {
     })
 };
 
-cs.appendAllowedCellList = function(extUrl, dispName, no) {
+Common.appendAllowedCellList = function(extUrl, dispName, no) {
     $("#allowedCellList")
-        .append('<tr id="deleteExtCellRel' + no + '"><td class="paddingTd">' + dispName + '</td><td><button onClick="cs.notAllowedCell(this)" data-ext-url="' + extUrl + '"data-i18n="btn.release">' + '</button></td></tr>')
+        .append('<tr id="deleteExtCellRel' + no + '"><td class="paddingTd">' + dispName + '</td><td><button onClick="Common.notAllowedCell(this)" data-ext-url="' + extUrl + '"data-i18n="btn.release">' + '</button></td></tr>')
         .localize();
 };
 
-cs.notAllowedCell = function(aDom) {
+Common.notAllowedCell = function(aDom) {
     let extUrl = $(aDom).data("extUrl");
-    cs.deleteExtCellLinkRelation(extUrl, getAppReadRelation()).done(function() {
+    Common.deleteExtCellLinkRelation(extUrl, getAppReadRelation()).done(function() {
         $(aDom).closest("tr").remove();
     });
 };
 
-cs.deleteExtCellLinkRelation = function(extCell, relName) {
+Common.deleteExtCellLinkRelation = function(extCell, relName) {
     var urlArray = extCell.split("/");
     var hProt = urlArray[0].substring(0, urlArray[0].length - 1);
     var fqdn = urlArray[2];
@@ -137,8 +138,8 @@ cs.deleteExtCellLinkRelation = function(extCell, relName) {
     });
 };
 
-cs.getOtherAllowedCells = function() {
-    cs.getExtCell().done(function(json) {
+Common.getOtherAllowedCells = function() {
+    Common.getExtCell().done(function(json) {
         var objSel = document.getElementById("otherAllowedCells");
         if (objSel.hasChildNodes()) {
           while (objSel.childNodes.length > 0) {
@@ -160,13 +161,13 @@ cs.getOtherAllowedCells = function() {
 
             for (var i in results) {
                 var url = results[i].Url;
-                cs.dispOtherAllowedCells(url);
+                Common.dispOtherAllowedCells(url);
             }
         }
     });
 };
 
-cs.getExtCell = function() {
+Common.getExtCell = function() {
   return $.ajax({
                 type: "GET",
                 url: Common.getCellUrl() + '__ctl/ExtCell',
@@ -177,32 +178,33 @@ cs.getExtCell = function() {
   });
 };
 
-cs.dispOtherAllowedCells = function(extUrl) {
-    cs.getProfile(extUrl).done(function(data) {
+Common.dispOtherAllowedCells = function(extUrl) {
+    Common.getProfile(extUrl).done(function(data) {
         var dispName = Common.getCellNameFromUrl(extUrl);
         if (data !== null) {
             dispName = data.DisplayName;
         }
-        cs.checkOtherAllowedCells(extUrl, dispName)
+        Common.checkOtherAllowedCells(extUrl, dispName)
     }).fail(function() {
         var dispName = Common.getCellNameFromUrl(extUrl);
-        cs.checkOtherAllowedCells(extUrl, dispName)
+        Common.checkOtherAllowedCells(extUrl, dispName)
     });
 };
 
-cs.checkOtherAllowedCells = function(extUrl, dispName) {
-    cs.getTargetToken(extUrl).done(function(extData) {
-        cs.getPhotoAPI(extUrl + Common.getBoxName(), extData.access_token).done(function(data) {
-            cs.appendOtherAllowedCells(extUrl, dispName);
+Common.checkOtherAllowedCells = function(extUrl, dispName) {
+    Common.getTargetToken(extUrl).done(function(extData) {
+        Common.getAppDataAPI(extUrl + Common.getBoxName(), extData.access_token).done(function(data) {
+            Common.appendOtherAllowedCells(extUrl, dispName);
         }).fail(function(data) {
-            if (data.status !== 404) {
-                cs.appendRequestCells(extUrl, dispName);
+            // Insufficient access privileges
+            if (data.status === 403) {
+                Common.appendRequestCells(extUrl, dispName);
             }
         });
     });
 };
 
-cs.getTargetToken = function(extCellUrl) {
+Common.getTargetToken = function(extCellUrl) {
     return $.ajax({
                 type: "POST",
                 url: Common.getCellUrl() + '__token',
@@ -217,26 +219,32 @@ cs.getTargetToken = function(extCellUrl) {
     });
 };
 
-cs.getPhotoAPI = function(targetCell, token) {
-    return $.ajax({
-        type: 'GET',
-        url: targetCell + getAppDataPath(),
-        headers: {
-            'Authorization':'Bearer ' + token,
-            'Accept':'application/json'
-        }
-    });
+Common.getAppDataAPI = function(targetCell, token) {
+    let requestInfo = $.extend(true,
+        {
+            type: 'GET',
+            url: targetCell + getAppDataPath(),
+            headers: {
+                'Authorization':'Bearer ' + token,
+            }
+        },
+        getAppRequestInfo()
+    );
+
+    return $.ajax(requestInfo);
 };
 
-cs.appendOtherAllowedCells = function(extUrl, dispName) {
+Common.appendOtherAllowedCells = function(extUrl, dispName) {
     $("#otherAllowedCells").append('<option value="' + extUrl + '">' + dispName + '</option>');
+    $("#bReadAnotherCell").prop("disabled", false);
 };
 
-cs.appendRequestCells = function(extUrl, dispName) {
+Common.appendRequestCells = function(extUrl, dispName) {
     $("#requestCells").append('<option value="' + extUrl + '">' + dispName + '</option>');
+    $("#bSendAllowed").prop("disabled", false);
 };
 
-cs.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRelTar) {
+Common.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRelTar) {
     var data = {};
     data.BoxBound = true;
     data.InReplyTo = uuid;
