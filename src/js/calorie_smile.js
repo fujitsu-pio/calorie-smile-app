@@ -40,7 +40,6 @@ getAppDataPath = function() {
 getAppRequestInfo = function() {
     return {
         headers: {
-            'Authorization':'Bearer ' + token,
             'Accept':'application/json'
         }
     }
